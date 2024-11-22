@@ -1,0 +1,27 @@
+{
+
+  "manifest_version": 3,
+  "name": "De-Instaify",
+  "description": "Take back control of your screen time.",
+  "homepage_url": "https://github.com/Gwyd0/De-Instaify",
+  "version": "1.0.0",
+  "permissions": ["storage", "scripting", "tabs"],
+  "background": {
+  	"scripts": ["service-worker.js"]
+  },
+  "content_scripts": [
+	{
+	"matches": ["*://*.instagram.com/*"],
+	"js": ["content.js"]
+	}
+  ],
+  "icons": {
+    "48": "icons/icon48.png",
+    "96": "icons/icon96.png",
+    "128": "icons/icon96.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "De-Instaify"
+  }
+}
