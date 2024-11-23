@@ -27,24 +27,24 @@ function loops() {
 		checkboxes[i].addEventListener('change', function() {
 			localStorage.setItem(this.id,  JSON.stringify(this.checked));
 			if (this.id=="checkbox3" && this.checked) {
-				browser.runtime.sendMessage({msgType: "SETTING", 
-					usr: JSON.parse(localStorage.getItem('usr')), 
-					psw: JSON.parse(localStorage.getItem('psw')) 
-				});
+				//browser.runtime.sendMessage({msgType: "SETTING",
+					//usr: JSON.parse(localStorage.getItem('usr')),
+					//psw: JSON.parse(localStorage.getItem('psw'))
+				//});
 			}
 			browser.runtime.sendMessage({msgType: "SETTING", id:this.id, checked:this.checked});
 			
 		});
 	}
 	// for inputs
-	document.getElementById('usr').addEventListener('input', function() {
+	/*document.getElementById('usr').addEventListener('input', function() {
 		browser.runtime.sendMessage({msgType: "SETTING", usr: this.value});
 		localStorage.setItem("usr",  JSON.stringify(this.value));
 	});
 	document.getElementById('psw').addEventListener('input', function() {
 		browser.runtime.sendMessage({msgType: "SETTING", psw: this.value});
 		localStorage.setItem("psw",  JSON.stringify(this.value));
-	});
+	});*/
 	
 	
 }
@@ -55,12 +55,12 @@ function setElements(){
 	
 	JSON.parse(localStorage.getItem('checkbox' + i));
 
-	if (inputCheckBox.checked) {
-		browser.runtime.sendMessage({msgType: "SETTING", 
-			usr: JSON.parse(localStorage.getItem('usr')), 
-			psw: JSON.parse(localStorage.getItem('psw')) 
-		});
-	}
+	//if (inputCheckBox.checked) {
+	//	browser.runtime.sendMessage({msgType: "SETTING",
+	//		usr: JSON.parse(localStorage.getItem('usr')),
+	//		psw: JSON.parse(localStorage.getItem('psw'))
+	//	});
+	//}
 }
 
 function handleBS(m) {

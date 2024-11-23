@@ -1,8 +1,11 @@
-
 connect();
 console.log("Loaded SparxBwk");
-let elementCheckingInterval = setInterval(function(){mainLoop();}, 400);
-
+//setInterval(function(){mainLoop();}, 400); //runs a loop continuously will replace with listeners soon.
+// SETTINGS
+//localStorage.setItem("test",  "[]");
+console.log(localStorage.getItem("test"));
+let SettingsReelsBlock = false;
+let SettingsReelsDirectAllow = false;
 
 // COMMUNICATION
 function connect() {
@@ -12,13 +15,13 @@ function connect() {
 	CsPort.onMessage.addListener((m) => {
 		if (m.msgType == "PageUpdated") {
 			console.log("Page Changed")
+			mainLoop();
 		}
 		else if (m.msgType == "SETTING") {
-			
-			if (m.id=="checkbox0") {SettingsBookworkChecks=m.checked;}
-			else if (m.id=="checkbox1") {console.log("1?");}
+			if (m.id=="checkbox0") {console.log("0")}
+			else if (m.id=="checkbox1") {console.log(m); SettingsReelsBlock=m.checked;}
 			else if (m.id=="checkbox2") {console.log("2?");}
-			else if (m.id=="checkbox3") {console.log("3?");}
+			else if (m.id=="checkbox3") {console.log(m); SettingsReelsDirectAllow=m.checked;}
 			else if (m.id=="checkbox4") {console.log("4?");}
 		}
 	});
@@ -33,18 +36,21 @@ function connect() {
 
 function mainLoop() {
     let labels = document.querySelectorAll('[aria-label]');
-    let videos = document.getElementsByTagName("video");
 
 
-    for (let i = 0; i < videos.length; i++) {
-        videos[i].remove();
-    }
 
     for (let i = 0; i < labels.length; i++) {
         label = labels[i].getAttribute("aria-label")
-        if (label == "Reels") {
+        if (label == "Reels" && SettingsReelsBlock) {
+            console.log(SettingsBlockReels)
             element = getNthParent(8, labels[i]);
             element.remove();
+            if (SettingsReelsDirectAllow) {
+                let videos = document.getElementsByTagName("video");
+                for (let i = 0; i < videos.length; i++) {
+                    videos[i].remove();
+                }
+            }
         }
         if (label == "Home") {
             element = getNthParent(8, labels[i]);
