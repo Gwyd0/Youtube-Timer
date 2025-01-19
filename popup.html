@@ -4,49 +4,30 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="./popup.css"/>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" integrity="sha384-GvrOXuhMATgEsSwCs4smul74iXGOixntILdUW9XmUC6+HX0sLNAK3q71HotJqlAn" crossorigin="anonymous">
 </head>
 <body>
 	<div class="top">
-		<section id="title">
-			<h1 id="content">DE-INSTAIFY</h1>
+		<section id="text">
+			<h1 id="title">Youtube-Timer</h1>
 			<p>By <a href="https://github.com/Gwyd0"  role="button">Gwyd<span class="blue">0 V.1.0.0</span></a></p>
 			<a href="https://www.freepik.com/icon/integral_9989416">Icons by Freepik</a>
 			<div id="links">
 				<a href="https://github.com/Gwyd0/De-Instaify" role="button">Github</a>
-				<a href="/webpages/license.html" role="button">License</a>
+				<a href="/webpages/license.html" target="_blank" role="button">License</a>
 				<a href="/webpages/privacy.html" target="_blank" role="button">Privacy</a>
 			</div>
 		</section>
-		<div id="settings">
-			<button type="button" class="acsent btn">Settings</button>
-			<div style="display: block;" id="menu0">
-				<label class="container">Only Show Direct Messages
-				  <input type="checkbox" id="checkbox0">
-				  <span class="checkmark"></span>
-				</label>
-				<label class="container">Block Videos/Reels
-				  <input type="checkbox" id="checkbox1">
-				  <span class="checkmark"></span>
-				</label>
-				<label class="container">Dont Show Stories
-				  <input type="checkbox" id="checkbox2">
-				  <span class="checkmark"></span>
-				</label>
-				<label class="container">Only show reels sent by message/links
-				  <input type="checkbox" id="checkbox3">
-				  <span class="checkmark"></span>
-				</label>
-				<label class="container">Dont Show suggested followers
-				  <input type="checkbox" id="checkbox4">
-				  <span class="checkmark"></span>
-				</label>
-				<label class="container">Allow Creation of posts
-				  <input type="checkbox" id="checkbox5">
-				  <span class="checkmark"></span>
-				</label>
-			</div>
-		</div>
+		<section id="data">
+		  <h3 id="time-display-msg">Time wasted on Youtube: </h3>
+		  <h1 id="time-display-hour">{. . .}</h1>
+		  <span class="blue">Hour/s</span>
+		  <h1 id="time-display-min">{. . .}</h1>
+		  <span class="blue">Min/s</span>
+		  <h1 id="time-display-sec">{. . .}</h1>
+		  <span class="blue">Sec/s</span>
+		  <h1 id="btn-settings"><a href="/webpages/settings.html" target="_blank" role="button">Settings</a></h1>
+		</section>
+		
 	</div>
 	<script src="./popup.js">
 	</script>

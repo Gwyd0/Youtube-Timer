@@ -1,18 +1,18 @@
 {
 
   "manifest_version": 3,
-  "name": "De-Instaify",
+  "name": "YT-Tracker",
   "description": "Take back control of your screen time.",
   "homepage_url": "https://github.com/Gwyd0/De-Instaify",
   "version": "1.0.0",
-  "permissions": ["storage", "scripting", "tabs"],
+  "permissions": ["storage", "scripting", "tabs", "notifications"],
   "background": {
   	"scripts": ["service-worker.js"]
   },
   "content_scripts": [
 	{
-	"matches": ["*://*.instagram.com/*"],
-	"js": ["content.js"]
+	"matches": ["*://*.youtube.com/*"],
+	"js": ["timerYT.js"]
 	}
   ],
   "icons": {
@@ -22,6 +22,6 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "De-Instaify"
+    "default_title": "YT-Tracker"
   }
 }
