@@ -14,6 +14,29 @@ function formatTime(data) {
         `${seconds}`;
 }
 
+
+function getSettings() {
+    return browser.storage.local.get(['timeSpent', 'timeLimitExceeded', 'timeLimitHalf', 'timeLimit', 'notifiyTimeUp', 'notifiyHalfTimeUp', 'websiteStatus'])
+        .then((result) => {
+            // Initialize settings with defaults if not set
+            settings = {
+                timeSpent: result.timeSpent || 0,
+                timeLimitExceeded: result.timeLimitExceeded || false,
+                timeLimitHalf: result.timeLimitHalf || false,
+                timeLimit: result.timeLimit || 3600, 
+                notifiyTimeUp: result.notifiyTimeUp || true, 
+                notifiyHalfTimeUp: result.notifiyHalfTimeUp || true, 
+                websiteStatus: result.websiteStatus || "restrict", 
+            };
+            console.log("Settings loaded:", settings);
+            formatTime(result.timeSpent);
+        })
+        .catch((error) => {
+            console.error("Error loading settings:", error);
+            document.getElementById("time-display-msg").textContent = "Error loading data.";
+        });
+}
+
 // Update the time display dynamically
 function updateLiveTime() {
     browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
@@ -26,12 +49,7 @@ function updateLiveTime() {
                 console.error("Error fetching live time:", error);
 
                 // Fetch from storage if active tab isn't on YouTube
-                browser.storage.local.get("youtubeTimeSpent").then((data) => {
-                    formatTime(data.youtubeTimeSpent);
-                }).catch((storageError) => {
-                    console.error("Error fetching stored time:", storageError);
-                    document.getElementById("time-display-msg").textContent = "Error loading data.";
-                });
+                getSettings();
             });
         } else {
             // Fetch stored time if no active tab is available
