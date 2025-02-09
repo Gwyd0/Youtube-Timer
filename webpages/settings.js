@@ -1,3 +1,4 @@
+// Function to get settings from browser storage
 function getSettings() {
     return browser.storage.local.get(['timeSpent', 'timeLimitExceeded', 'timeLimitHalf', 'timeLimit', 'notifiyTimeUp', 'notifiyHalfTimeUp', 'websiteStatus'])
         .then((result) => {

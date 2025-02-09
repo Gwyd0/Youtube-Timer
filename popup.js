@@ -14,7 +14,7 @@ function formatTime(data) {
         `${seconds}`;
 }
 
-
+// function to get settings from storage
 function getSettings() {
     return browser.storage.local.get(['timeSpent', 'timeLimitExceeded', 'timeLimitHalf', 'timeLimit', 'notifiyTimeUp', 'notifiyHalfTimeUp', 'websiteStatus'])
         .then((result) => {

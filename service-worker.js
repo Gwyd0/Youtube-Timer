@@ -11,26 +11,16 @@ const defaultSettings = {
     websiteStatus: "restrict", 
 };
 
-// Global variable for settings
+// Global variables
 let settings = { ...defaultSettings };
+let activeTabId = null;
 
 // Function to initialize or retrieve settings
 async function setSettings() {
     try {
-        const result = await browser.storage.local.get(['timeSpent', 'timeLimitExceeded', 'timeLimitHalf', 'timeLimit', 'notifiyTimeUp', 'notifiyHalfTimeUp', 'websiteStatus']);
-        // Merge stored settings with defaults
-        settings = {
-            timeSpent: result.timeSpent ?? defaultSettings.timeSpent,
-            timeLimitExceeded: result.timeLimitExceeded ?? defaultSettings.timeLimitExceeded,
-            timeLimitHalf: result.timeLimitHalf ?? defaultSettings.timeLimitHalf,
-            timeLimit: result.timeLimit ?? defaultSettings.timeLimit,
-            notifiyTimeUp: result.notifiyTimeUp ?? defaultSettings.notifiyTimeUp, 
-            notifiyHalfTimeUp: result.notifiyHalfTimeUp ?? defaultSettings.notifiyHalfTimeUp,
-            websiteStatus: result.websiteStatus ?? defaultSettings.websiteStatus 
-        };
-        // Save settings back to storage if any default was used
+        const result = await browser.storage.local.get(Object.keys(defaultSettings));
+        settings = { ...defaultSettings, ...result };
         await browser.storage.local.set(settings);
-        //console.log("Settings initialized and saved:", settings);
     } catch (error) {
         console.error("Error retrieving or saving settings:", error);
     }
@@ -40,7 +30,6 @@ async function setSettings() {
 async function saveSettings() {
     try {
         await browser.storage.local.set(settings);
-        //console.log("Settings updated and saved:", settings);
     } catch (error) {
         console.error("Error saving settings:", error);
     }
@@ -48,20 +37,11 @@ async function saveSettings() {
 
 // Function to check and update the time
 async function checkTimeSpent() {
-    await setSettings(); // Ensure settings are loaded before proceeding
+    await setSettings();
 
     console.log(`Total time spent: ${settings.timeSpent} seconds, Time Limit: ${settings.timeLimit}`);
-
-    // If the time exceeds the limit, show a notification
-    if (settings.timeSpent >= settings.timeLimit && !settings.timeLimitExceeded) {
-        browser.notifications.create({
-            type: "basic",
-            title: "Time Limit Reached",
-            message: "You've exceeded the time limit for YouTube today.",
-        });
-        settings.timeLimitExceeded = true;
-    } 
-    else if (settings.timeSpent >= settings.timeLimit / 2 && !settings.timeLimitHalf) {
+    
+    if (settings.timeSpent >= settings.timeLimit / 2 && !settings.timeLimitHalf) {
         browser.notifications.create({
             type: "basic",
             title: "YouTube Timer",
@@ -69,12 +49,49 @@ async function checkTimeSpent() {
         });
         settings.timeLimitHalf = true;
     }
+    else if (settings.timeSpent >= settings.timeLimit && !settings.timeLimitExceeded) {
+        browser.notifications.create({
+            type: "basic",
+            title: "Time Limit Reached",
+            message: "You've exceeded the time limit for YouTube today. Go outside.",
+        });
+        settings.timeLimitExceeded = true;
+    } 
 
-    // Save updated settings
     await saveSettings();
 }
 
+// Function to update the active tab and manage tracking
+function updateActiveTab() {
+    browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+        if (tabs.length > 0 && tabs[0].url.includes("youtube.com")) {
+            if (activeTabId !== tabs[0].id) {
+                if (activeTabId) {
+                    browser.tabs.sendMessage(activeTabId, { action: "stopTracking" }).catch(() => {});
+                }
+                activeTabId = tabs[0].id;
+                browser.tabs.sendMessage(activeTabId, { action: "startTracking" }).catch(() => {});
+            }
+        } else {
+            if (activeTabId) {
+                browser.tabs.sendMessage(activeTabId, { action: "stopTracking" }).catch(() => {});
+                activeTabId = null;
+            }
+        }
+    });
+}
+
+// Listen for tab activation
+browser.tabs.onActivated.addListener(updateActiveTab);
+browser.windows.onFocusChanged.addListener(updateActiveTab);
+browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (tab.active && changeInfo.url && tab.url.includes("youtube.com")) {
+        updateActiveTab();
+    }
+});
+
+// Check time every 10 seconds
 setInterval(async () => {
     await checkTimeSpent();
-}, 10000); // 10 second interval
+}, 10000);
 

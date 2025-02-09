@@ -1,46 +1,62 @@
+// content script cant be called content as it clashes with another script on youtube homepage
 console.log("YouTube Timer content script loaded.");
+
+/* TODO
+
+ * setting to force restrict always
+ * refine restrict mode
+ * have tip/info tooltips for settings
+ * Donate button?
+ * have qauter time notfication
+ * add more quotes to notifications
+
+*/ 
 
 // Global variables
 let settings = {};
 let startTime = null;
 let saveInterval = null; // Interval for saving settings
 
-function restrictMode() {
+// function to Restrict Youtube or block Youtube and add text to the page
+function modifyYoutube() {
     getSettings();
-    let showHomepage;
-    if (settings.websiteStatus = "restrict" && settings.timeLimitExceeded) {
-        showHomepage = "none";
-        const contentDiv = document.getElementById('content');
-        if (!document.getElementById('YTTrackerText')) {
-            // Create a new text element
-            const text = document.createElement('p');
-            text.id = "YTTrackerText";
-            text.textContent = 'Your Homepage has been blocked as you have reached your time limit, Is this really worth it?';
-            text.style.color = "white";
-            text.style.fontSize = "3em";
-            text.style.padding = '10px';
-            text.style.fontFamily = 'monospace';  // Set font to monospace
-            text.style.textAlign = 'center';  
-            // Append the new text element to the content div
-            contentDiv.appendChild(text);
-        } 
-        else {
-            console.warn('No element with id="content" found.');
+    if (settings.timeLimitExceeded) {
+        let text = document.createElement("div");
+        text.style.position = "fixed";
+        text.style.top = "50%";
+        text.style.left = "50%";
+        text.style.transform = "translate(-50%, -50%)";
+        text.style.color = "white";
+        text.style.fontSize = "3em";
+        text.style.padding = "10px";
+        text.style.fontFamily = "monospace";
+        text.style.textAlign = "center";
+        text.style.backgroundColor = "black";
+        text.style.width = "100vw";
+        text.style.height = "100vh";
+        text.style.display = "flex";
+        text.style.justifyContent = "center";
+        text.style.alignItems = "center";
+        text.id = "YTTrackerText";
+
+        console.log(settings.websiteStatus);
+        
+        if (settings.websiteStatus === ".restrict") {
+            let primary = document.getElementById("primary");
+            if (primary && window.location.pathname === "/") { // Only remove if on homepage
+                primary.remove();
+                text.textContent = "YouTube homepage has been restricted as you have reached your time limit. Is this really worth it?";
+                document.body.appendChild(text);
+            }
+        } else if (settings.websiteStatus === "block") {
+            document.body.innerHTML = ""; // Remove everything
+            text.textContent = "YouTube has been blocked as you have reached your time limit.";
+            document.body.appendChild(text);
         }
-    }
-    else {
-        showHomepage = "block";
-    }
-    const primaryElement = document.getElementById("primary");
-    if (primaryElement) {
-        primaryElement.style.display = showHomepage; // Hides the element
-        console.log("The 'primary' element has been changed.");
-    } else {
-        console.log("Element with ID 'primary' not found.");
     }
 }
 
-// Function to get settings and initialize if not set
+// Comment
 function getSettings() {
     return browser.storage.local.get(['timeSpent', 'timeLimitExceeded', 'timeLimitHalf', 'timeLimit', 'notifiyTimeUp', 'notifiyHalfTimeUp', 'websiteStatus'])
         .then((result) => {
@@ -52,7 +68,7 @@ function getSettings() {
                 timeLimit: result.timeLimit || 3600, 
                 notifiyTimeUp: result.notifiyTimeUp || false, 
                 notifiyHalfTimeUp: result.notifiyHalfTimeUp || false, 
-                websiteStatus: result.websiteStatus || "block", 
+                websiteStatus: result.websiteStatus || "restrict", 
             };
             console.log("Settings loaded:", settings);
         })
@@ -125,26 +141,22 @@ function stopAutoSave() {
     }
 }
 
-// Track visibility changes (e.g., switching tabs)
-document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") {
-        stopTracking();
-        stopAutoSave();
-    } else if (document.visibilityState === "visible") {
-        startTracking();
-        startAutoSave();
-    }
-    console.log("Visibility changed:", document.visibilityState);
-});
-
-// Handle messages from popup.js
+// Handle message types from all scripts
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "getLiveTime") {
-        // Calculate the live time including the current session
+        // Handle popup.js request for live time
         const currentTime = startTime ? (Date.now() - startTime) / 1000 : 0;
         const totalLiveTime = settings.timeSpent + currentTime;
         sendResponse({ timeSpent: totalLiveTime });
         console.log("Live time sent to popup:", formatTime(totalLiveTime));
+    } else if (message.action === "startTracking") {
+        // Start tracking when background script says it's the active tab
+        startTracking();
+        startAutoSave();
+    } else if (message.action === "stopTracking") {
+        // Stop tracking when background script says it's inactive
+        stopTracking();
+        stopAutoSave();
     }
 });
 
@@ -160,8 +172,7 @@ if (window.location.hostname === "www.youtube.com") {
             const currentTime = startTime ? (Date.now() - startTime) / 1000 : 0;
             console.log(`Total time spent on YouTube: ${formatTime(settings.timeSpent + currentTime)}`);
             
-            //settings
-            restrictMode();
+            modifyYoutube();
         }, 1000); // Check every 1 seconds
     });
 } else {
