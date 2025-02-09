@@ -1,5 +1,5 @@
 # Youtube-Timer
-A web extension to simply track the time you spend watching YouTube.
+A web extension to track the time you spend watching YouTube.
 
 ## Installation Guide (Uncompiled Extension)
 
