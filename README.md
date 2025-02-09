@@ -48,6 +48,6 @@ This guide will help you install the uncompiled version of Youtube-Timer into Fi
 ### Important Notes
 - **Temporary Installation**: This method only temporarily installs the extension. It will be removed when you restart Firefox.
 
-For any issues or feature requests, feel free to create an [issue](https://github.com/Youtube-Timer/youtube-timer/issues) in this repository.
+For any issues or feature requests, feel free to create an [issue](https://github.com/gwyd0/youtube-timer/issues) in this repository.
 
 ---
