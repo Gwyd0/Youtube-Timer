@@ -1,14 +1,19 @@
 console.log("Background script worker loaded.");
 
-// Default settings
+// Default settings set from background.js
 const defaultSettings = {
     timeSpent: 0,
     timeLimitExceeded: false,
     timeLimitHalf: false,
+    timeLimitCustom: false,
     timeLimit: 3600, // Default time limit in seconds
     notifiyTimeUp: true, 
     notifiyHalfTimeUp: true, 
+    notifyCustomTime: 60 * 15, // default 15mins before
+    resetType: "daily",
+    lastReset: "0",
     websiteStatus: "restrict", 
+    advanceForceRestrict: false
 };
 
 // Global variables
@@ -38,21 +43,31 @@ async function saveSettings() {
 // Function to check and update the time
 async function checkTimeSpent() {
     await setSettings();
-
     console.log(`Total time spent: ${settings.timeSpent} seconds, Time Limit: ${settings.timeLimit}`);
     
-    if (settings.timeSpent >= settings.timeLimit / 2 && !settings.timeLimitHalf) {
+    
+    console.log(settings.timeLimitCustom)
+    if (settings.timeSpent >= settings.timeLimit - settings.notifyCustomTime && !settings.timeLimitCustom && settings.notifyCustomTime != 0) {
         browser.notifications.create({
             type: "basic",
-            title: "YouTube Timer",
+            title: "Custom Time Notification",
+            message: "You have " + Math.round(settings.notifyCustomTime / 60) + " Minute/s left, Is it worth it?",
+        });
+        settings.timeLimitCustom = true;
+        
+    } 
+    else if (settings.timeSpent >= settings.timeLimit / 2 && !settings.timeLimitHalf && settings.notifiyHalfTimeUp) {
+        browser.notifications.create({
+            type: "basic",
+            title: "Half Time Notification",
             message: "You have used half of your YouTube time limit. Is it worth it?",
         });
         settings.timeLimitHalf = true;
     }
-    else if (settings.timeSpent >= settings.timeLimit && !settings.timeLimitExceeded) {
+    else if (settings.timeSpent >= settings.timeLimit && !settings.timeLimitExceeded && settings.notifiyTimeUp) {
         browser.notifications.create({
             type: "basic",
-            title: "Time Limit Reached",
+            title: "Time Limit Notification",
             message: "You've exceeded the time limit for YouTube today. Go outside.",
         });
         settings.timeLimitExceeded = true;
@@ -93,5 +108,5 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 // Check time every 10 seconds
 setInterval(async () => {
     await checkTimeSpent();
-}, 10000);
+}, 5000);
 

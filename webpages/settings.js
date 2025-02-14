@@ -1,21 +1,41 @@
 // Function to get settings from browser storage
 function getSettings() {
-    return browser.storage.local.get(['timeSpent', 'timeLimitExceeded', 'timeLimitHalf', 'timeLimit', 'notifiyTimeUp', 'notifiyHalfTimeUp', 'websiteStatus'])
-        .then((result) => {
-            // Initialize settings with defaults if not set
+    return browser.storage.local.get([
+        'timeSpent', 'timeLimitExceeded', 'timeLimitHalf', 'timeLimitCustom', 'timeLimit', 'notifiyTimeUp', 'notifiyHalfTimeUp', 'notifyCustomTime', 'websiteStatus', 'resetType', 'lastReset', 'advanceForceRestrict' 
+        ]).then((result) => {
             settings = {
-                timeSpent: result.timeSpent || 0,
-                timeLimitExceeded: result.timeLimitExceeded || false,
-                timeLimitHalf: result.timeLimitHalf || false,
-                timeLimit: result.timeLimit || 3600, 
-                notifiyTimeUp: result.notifiyTimeUp || false, 
-                notifiyHalfTimeUp: result.notifiyHalfTimeUp || false, 
-                websiteStatus: result.websiteStatus || "restrict", 
+                timeSpent: result.timeSpent,
+                timeLimitExceeded: result.timeLimitExceeded,
+                timeLimitHalf: result.timeLimitHalf,
+                timeLimitCustom: result.timeLimitCustom,
+                timeLimit: result.timeLimit,
+                notifiyTimeUp: result.notifiyTimeUp,
+                notifiyHalfTimeUp: result.notifiyHalfTimeUp,
+                notifyCustomTime: result.notifyCustomTime, // default 15mins before limit, 0 = disabled
+                websiteStatus: result.websiteStatus,
+                resetType: result.resetType,
+                lastReset: result.lastReset,
+                advanceForceRestrict: result.advanceForceRestrict
             };
+        
+            
             document.getElementById('timeLimit').value = settings.timeLimit / 3600;
+            
             document.getElementById('timeLimitAction').value = settings.websiteStatus;
+            document.getElementById('timeResetAction').value = settings.resetType;
+           
+            if (settings.notifyCustomTime != 0) {
+                document.getElementById('customNotificationInput').value = settings.notifyCustomTime / 60;
+                document.getElementById('notifyCustomTime').checked = true;
+            }
+            else {
+                document.getElementById('customNotificationInput').value = 0;
+                document.getElementById('notifyCustomTime').checked = false;
+            }
+            
             document.getElementById('notifyWhenTimeUp').checked = settings.notifiyTimeUp;
             document.getElementById('notifyAtHalfTime').checked = settings.notifiyHalfTimeUp;
+            document.getElementById('advanceForceRestrict').checked = settings.advanceForceRestrict;
 
             updateTimeLabel(settings.timeLimit / 3600);
             
@@ -32,17 +52,29 @@ function getSettings() {
 function saveSettings() {
     settings.timeLimit = document.getElementById('timeLimit').value * 3600;
     settings.websiteStatus = document.getElementById('timeLimitAction').value;
+    settings.resetType = document.getElementById('timeResetAction').value;
+    
+    if (document.getElementById('notifyCustomTime').checked == false) {
+        settings.notifyCustomTime = 0;
+    }
+    else {
+        settings.notifyCustomTime = document.getElementById('customNotificationInput').value * 60;
+    }
+    
+    settings.advanceForceRestrict = document.getElementById('advanceForceRestrict').checked;
+    
     settings.notifiyTimeUp = document.getElementById('notifyWhenTimeUp').checked;
     settings.notifiyHalfTimeUp = document.getElementById('notifyAtHalfTime').checked;
     
     settings.timeLimitExceeded = false;
     settings.timeLimitHalf = false;
+    settings.timeLimitCustom = false;
     
     return browser.storage.local
         .set(settings)
         .then(() => {
             console.log("Settings saved:", settings);
-            alert('Settings have been saved!');
+            alert('Settings have been saved - You may have to reload pages to see changes.');
         })
         .catch((error) => {
             console.error("Error saving settings:", error);

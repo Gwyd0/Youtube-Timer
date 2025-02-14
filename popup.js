@@ -16,17 +16,24 @@ function formatTime(data) {
 
 // function to get settings from storage
 function getSettings() {
-    return browser.storage.local.get(['timeSpent', 'timeLimitExceeded', 'timeLimitHalf', 'timeLimit', 'notifiyTimeUp', 'notifiyHalfTimeUp', 'websiteStatus'])
+    return browser.storage.local.get([
+        'timeSpent', 'timeLimitExceeded', 'timeLimitHalf', 'timeLimit', 'notifiyTimeUp', 'notifiyHalfTimeUp', 'websiteStatus', 'resetType', 'lastReset'
+    ])
         .then((result) => {
             // Initialize settings with defaults if not set
             settings = {
                 timeSpent: result.timeSpent || 0,
                 timeLimitExceeded: result.timeLimitExceeded || false,
                 timeLimitHalf: result.timeLimitHalf || false,
-                timeLimit: result.timeLimit || 3600, 
-                notifiyTimeUp: result.notifiyTimeUp || true, 
-                notifiyHalfTimeUp: result.notifiyHalfTimeUp || true, 
-                websiteStatus: result.websiteStatus || "restrict", 
+                timeLimitCustom: result.timeLimitCustom || false,
+                timeLimit: result.timeLimit || 3600,
+                notifiyTimeUp: result.notifiyTimeUp || false,
+                notifiyHalfTimeUp: result.notifiyHalfTimeUp || false,
+                notifyCustomTime: result.notifyCustomTime || 60 * 15,
+                websiteStatus: result.websiteStatus || "restrict",
+                resetType: result.resetType || "daily",
+                lastReset: result.lastReset || 0,
+                advanceForceRestrict: result.advanceForceRestrict || false
             };
             console.log("Settings loaded:", settings);
             formatTime(result.timeSpent);
