@@ -1,5 +1,9 @@
-# Youtube-Timer
-Youtube-Timer helps you manage and control the time spent on YouTube by setting limits and restrictions. It features a simple UI to track and restrict usage based on user-defined settings.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Gwyd0/Youtube-Timer/637ebe2e3c86a5ec96aae1ffada298c278ee78e8/icons/icon.svg" alt="Icon" width="150" height="150">
+</p>
+<p align="center">Youtube-Timer helps you track and manage your time on YouTube by setting limits and restrictions.</p>  
+<p align="center">A 100% open-source project, completely free to use.</p>
+<p align="center">Please star this project and leave a review <3 </p>
 
 ## Features and Settings
 
@@ -9,12 +13,20 @@ YouTube Tracker/Timer is a simple Firefox extension designed to help you manage 
 * Restrict Mode: Restricts the YouTube homepage by removing thumbnails and content while still allowing searches and video playback once your time limit is reached.
 
 * Notifications: Sends notifications when half or a quarter of your time limit has been reached.
+  
+* Lock settings for set periods of time.
+
+* Clean Modern UI
+  
+## Installation
+<p align="left">Download it directly from the <a href="https://addons.mozilla.org/en-GB/firefox/addon/yt-tracker/">Firefox Add-ons Store</a> and add it to your browser.</p>
+<p align="right">
+  <img src="https://github.com/Gwyd0/Youtube-Timer/blob/main/screenshots/UI.png?raw=true" alt="Popup">
+</p>
 
 ### Settings Page UI
 ![UI Screenshot 2](https://github.com/Gwyd0/Youtube-Timer/blob/main/screenshots/UI2.png?raw=true)
 
-### Popup UI
-![UI Screenshot](https://github.com/Gwyd0/Youtube-Timer/blob/main/screenshots/UI.png?raw=true) |
 
 ## Installation Guide (Uncompiled Extension)
 
@@ -51,3 +63,5 @@ This guide will help you install the uncompiled version of Youtube-Timer into Fi
 For any issues or feature requests, feel free to create an [issue](https://github.com/gwyd0/youtube-timer/issues) in this repository.
 
 ---
+
+Thanks <3
