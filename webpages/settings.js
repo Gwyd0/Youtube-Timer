@@ -1,7 +1,7 @@
 // Function to get settings from browser storage
 function getSettings() {
     return browser.storage.local.get([
-        'timeSpent', 'timeLimitExceeded', 'timeLimitHalf', 'timeLimitCustom', 'timeLimit', 'notifiyTimeUp', 'notifiyHalfTimeUp', 'notifyCustomTime', 'websiteStatus', 'resetType', 'lastReset', 'advanceForceRestrict' 
+        'timeSpent', 'timeLimitExceeded', 'timeLimitHalf', 'timeLimitCustom', 'timeLimit', 'notifiyTimeUp', 'notifiyHalfTimeUp', 'notifyCustomTime', 'websiteStatus', 'resetType', 'lastReset', 'advanceForceRestrict', 'nextResetTime'
         ]).then((result) => {
             settings = {
                 timeSpent: result.timeSpent,
@@ -15,7 +15,8 @@ function getSettings() {
                 websiteStatus: result.websiteStatus,
                 resetType: result.resetType,
                 lastReset: result.lastReset,
-                advanceForceRestrict: result.advanceForceRestrict
+                advanceForceRestrict: result.advanceForceRestrict,
+                nextResetTime: result.nextResetTime
             };
         
             
@@ -71,24 +72,40 @@ function saveSettings() {
     settings.timeLimitCustom = false;
     
     return browser.storage.local
-        .set(settings)
-        .then(() => {
-            console.log("Settings saved:", settings);
-            alert('Settings have been saved - You may have to reload pages to see changes.');
-        })
-        .catch((error) => {
-            console.error("Error saving settings:", error);
-            alert("Error saving settings:", error);
-        });
+    .set({ 
+        timeSpent: settings.timeSpent,
+        timeLimitExceeded: settings.timeLimitExceeded,
+        timeLimitHalf: settings.timeLimitHalf,
+        timeLimitCustom: settings.timeLimitCustom,
+        timeLimit: settings.timeLimit,
+        notifiyTimeUp: settings.notifiyTimeUp,
+        notifiyHalfTimeUp: settings.notifiyHalfTimeUp,
+        notifyCustomTime: settings.notifyCustomTime, // default 15mins before limit, 0 = disabled
+        websiteStatus: settings.websiteStatus,
+        resetType: settings.resetType,
+        advanceForceRestrict: settings.advanceForceRestrict
+
+    })
+    .then(() => {
+        console.log("Settings saved:", settings);
+    })
+    .catch((error) => {
+        console.error("Error saving settings:", error);
+    });
     
 }
-
 
 // Update the time label based on the slider value
 function updateTimeLabel(value) {
     const hours = Math.floor(value);
     const minutes = (value - hours) * 60;
-    const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} Hour/s`;
+    let formattedTime = 0
+    if (hours >= 1) {
+        formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} Hour/s`;
+    }
+    else {
+        formattedTime = `${String(minutes).padStart(2, '0')} Minute/s`;
+    }
     document.getElementById('timeLabel').textContent = formattedTime;
 }
 

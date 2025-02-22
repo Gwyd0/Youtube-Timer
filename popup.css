@@ -6,12 +6,20 @@ body {
 	--background-color: #101010;
 	--acsent-color: #DC7FA6;
 	--darker-acsent-color: #101010;
-	--font-color: #fff;
+	--font-color: #eee;
 }
 section {
-    margin-bottom: 8%; #//070202
+    margin-bottom: 8%;
 }
-
+#data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#debug {
+  display: block;
+  align-items: center;
+}
 
 #title {
   text-align: center;
@@ -27,7 +35,7 @@ section {
 
 #time-display-hour, #time-display-min, #time-display-sec   {
   text-align: center;
-	font-size: 3.5em;
+	font-size: 4em;
 	background: -webkit-linear-gradient(45deg, #B8336A, #ACACDE);
 	-webkit-background-clip: text;
     -webkit-text-fill-color: transparent;

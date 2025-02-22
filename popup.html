@@ -9,7 +9,7 @@
 	<div class="top">
 		<section id="text">
 			<h1 id="title">Youtube-Timer</h1>
-			<p>By <a href="https://github.com/Gwyd0/Youtube-Timer"  role="button">Gwyd<span class="blue">0 V.1.0.1 (beta)</span></a></p>
+			<p>By <a href="https://github.com/Gwyd0/Youtube-Timer"  role="button">Gwyd<span class="blue">0 V.1.0.2 (beta)</span></a></p>
 			<a href="https://www.freepik.com/">Icons by Freepik</a>
 			<div id="links">
 				<a href="https://github.com/Gwyd0/Youtube-Timer" role="button">Github</a>
@@ -17,14 +17,20 @@
 				<a href="/webpages/privacy.html" target="_blank" role="button">Privacy</a>
 			</div>
 		</section>
+		<div id="debug">
+		    <span id="time-last-reset">Last Reset: {.}</span><br>
+		    <span id="time-next-reset">Next Reset: {.}</span>
+		  </div>
+		<h3 id="time-display-msg">Time wasted on Youtube: </h3>
 		<section id="data">
-		  <h3 id="time-display-msg">Time wasted on Youtube: </h3>
 		  <h1 id="time-display-hour">{. . .}</h1>
-		  <span class="blue">Hour/s</span>
+		  <span class="blue">:</span>
 		  <h1 id="time-display-min">{. . .}</h1>
-		  <span class="blue">Min/s</span>
+		  <span class="blue">:</span>
 		  <h1 id="time-display-sec">{. . .}</h1>
-		  <span class="blue">Sec/s</span>
+		  <span class="blue"></span>
+		</section>
+		<section id="btns">
 		  <h1 id="btn-settings"><a href="/webpages/settings.html" target="_blank" role="button">Settings</a></h1>
 		</section>
 		

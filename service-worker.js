@@ -13,7 +13,8 @@ const defaultSettings = {
     resetType: "daily",
     lastReset: "0",
     websiteStatus: "restrict", 
-    advanceForceRestrict: false
+    advanceForceRestrict: false,
+    nextResetTime: 10000000000
 };
 
 // Global variables
@@ -26,6 +27,7 @@ async function setSettings() {
         const result = await browser.storage.local.get(Object.keys(defaultSettings));
         settings = { ...defaultSettings, ...result };
         await browser.storage.local.set(settings);
+        console.log(settings);
     } catch (error) {
         console.error("Error retrieving or saving settings:", error);
     }
@@ -45,13 +47,11 @@ async function checkTimeSpent() {
     await setSettings();
     console.log(`Total time spent: ${settings.timeSpent} seconds, Time Limit: ${settings.timeLimit}`);
     
-    
-    console.log(settings.timeLimitCustom)
     if (settings.timeSpent >= settings.timeLimit - settings.notifyCustomTime && !settings.timeLimitCustom && settings.notifyCustomTime != 0) {
         browser.notifications.create({
             type: "basic",
             title: "Custom Time Notification",
-            message: "You have " + Math.round(settings.notifyCustomTime / 60) + " Minute/s left, Is it worth it?",
+            message: "You have " + Math.round((settings.timeLimit - settings.notifyCustomTime) / 60)  + " Minute/s left, Is it worth it?",
         });
         settings.timeLimitCustom = true;
         
@@ -60,7 +60,7 @@ async function checkTimeSpent() {
         browser.notifications.create({
             type: "basic",
             title: "Half Time Notification",
-            message: "You have used half of your YouTube time limit. Is it worth it?",
+            message: "You have used half (" + Math.round((settings.timeLimit / 2) / 60)  +" Min/s) of your YouTube time limit. Is it worth it?",
         });
         settings.timeLimitHalf = true;
     }
@@ -68,7 +68,7 @@ async function checkTimeSpent() {
         browser.notifications.create({
             type: "basic",
             title: "Time Limit Notification",
-            message: "You've exceeded the time limit for YouTube today. Go outside.",
+            message: "You've exceeded the time limit for YouTube today. (" + Math.round((settings.timeLimit) / 60)  + " Min/s) Go outside.",
         });
         settings.timeLimitExceeded = true;
     } 
