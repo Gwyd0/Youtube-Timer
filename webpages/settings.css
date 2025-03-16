@@ -112,7 +112,7 @@ select, input[type="checkbox"] {
     max-width: 10%;
 }
 
-button {
+.SettingsButton {
     background: var(--acsent-color);
     color: var(--font-color);
     font-weight: bold;
@@ -124,9 +124,11 @@ button {
     transition: background 0.3s ease, transform 0.1s ease-in-out;
 }
 
-button:hover {
+.SettingsButton:hover {
     background: var(--darker-acsent-color);
 }
+
+
 
 #timeLimitAction, #timeResetAction {
     background: var(--darker-acsent-color);
@@ -147,6 +149,23 @@ button:hover {
     border-color: var(--acsent-color);
 }
 
+/* Popup Container */
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--darker-acsent-color);
+    color: var(--font-color);
+    padding: 5%;
+    border: 2px solid var(--acsent-color);
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    z-index: 1;
+}
+
 /* Tooltip Container */
 .tooltip {
     position: relative;
@@ -165,7 +184,6 @@ button:hover {
     border: 2px solid var(--acsent-color);
     border-radius: 6px;
     position: absolute;
-    z-index: 1;
     width: 200px;
     bottom: 120%;
     left: 50%;

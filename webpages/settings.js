@@ -1,7 +1,7 @@
 // Function to get settings from browser storage
 function getSettings() {
     return browser.storage.local.get([
-        'timeSpent', 'timeLimitExceeded', 'timeLimitHalf', 'timeLimitCustom', 'timeLimit', 'notifiyTimeUp', 'notifiyHalfTimeUp', 'notifyCustomTime', 'websiteStatus', 'resetType', 'lastReset', 'advanceForceRestrict', 'nextResetTime'
+        'timeSpent', 'timeLimitExceeded', 'timeLimitHalf', 'timeLimitCustom', 'timeLimit', 'notifiyTimeUp', 'notifiyHalfTimeUp', 'notifyCustomTime', 'websiteStatus', 'resetType', 'lastReset', 'advanceForceRestrict', 'nextResetTime', 'settingsLocked', 'settingsUnlockedTime'
         ]).then((result) => {
             settings = {
                 timeSpent: result.timeSpent,
@@ -16,36 +16,45 @@ function getSettings() {
                 resetType: result.resetType,
                 lastReset: result.lastReset,
                 advanceForceRestrict: result.advanceForceRestrict,
-                nextResetTime: result.nextResetTime
+                nextResetTime: result.nextResetTime,
+                settingsLocked: result.settingsLocked,
+                settingsUnlockedTime: result.settingsUnlockedTime
             };
-        
-            
-            document.getElementById('timeLimit').value = settings.timeLimit / 3600;
-            
-            document.getElementById('timeLimitAction').value = settings.websiteStatus;
-            document.getElementById('timeResetAction').value = settings.resetType;
-           
-            if (settings.notifyCustomTime != 0) {
-                document.getElementById('customNotificationInput').value = settings.notifyCustomTime / 60;
-                document.getElementById('notifyCustomTime').checked = true;
+            if (settings.settingsUnlockedTime < new Date()) {
+                settings.settingsLocked = false;
+                document.getElementById('timeLimit').value = settings.timeLimit / 3600;
+                
+                document.getElementById('timeLimitAction').value = settings.websiteStatus;
+                document.getElementById('timeResetAction').value = settings.resetType;
+               
+                if (settings.notifyCustomTime != 0) {
+                    document.getElementById('customNotificationInput').value = settings.notifyCustomTime / 60;
+                    document.getElementById('notifyCustomTime').checked = true;
+                }
+                else {
+                    document.getElementById('customNotificationInput').value = 0;
+                    document.getElementById('notifyCustomTime').checked = false;
+                }
+                
+                document.getElementById('notifyWhenTimeUp').checked = settings.notifiyTimeUp;
+                document.getElementById('notifyAtHalfTime').checked = settings.notifiyHalfTimeUp;
+                document.getElementById('advanceForceRestrict').checked = settings.advanceForceRestrict;
+
+                updateTimeLabel(settings.timeLimit / 3600);
+                
+                console.log("Settings loaded:", settings);
             }
             else {
-                document.getElementById('customNotificationInput').value = 0;
-                document.getElementById('notifyCustomTime').checked = false;
+                const settingsSection = document.getElementById('settings');
+                const settingsLockText = document.getElementById('lockText');
+                settingsSection.innerHTML = "";
+                lockText.textContent = "Settings have been locked until " + settings.settingsUnlockedTime + ", No changes can be made until then.";
             }
-            
-            document.getElementById('notifyWhenTimeUp').checked = settings.notifiyTimeUp;
-            document.getElementById('notifyAtHalfTime').checked = settings.notifiyHalfTimeUp;
-            document.getElementById('advanceForceRestrict').checked = settings.advanceForceRestrict;
-
-            updateTimeLabel(settings.timeLimit / 3600);
-            
-            console.log("Settings loaded:", settings);
-            
         })
         .catch((error) => {
             console.error("Error loading settings:", error);
         });
+        
 }
 
 
@@ -83,7 +92,9 @@ function saveSettings() {
         notifyCustomTime: settings.notifyCustomTime, // default 15mins before limit, 0 = disabled
         websiteStatus: settings.websiteStatus,
         resetType: settings.resetType,
-        advanceForceRestrict: settings.advanceForceRestrict
+        advanceForceRestrict: settings.advanceForceRestrict,
+        settingsLocked: settings.settingsLocked,
+        settingsUnlockedTime: settings.settingsUnlockedTime
 
     })
     .then(() => {
@@ -94,6 +105,55 @@ function saveSettings() {
     });
     
 }
+
+// function to lock settings for set date
+function lockSettings() {
+    if (!settings.settingsLocked) {
+        settings.settingsLocked = true;
+        let unlockedDate = new Date();
+        unlockedDate.setDate(unlockedDate.getDate() + 7);
+        settings.settingsUnlockedTime = unlockedDate;
+        saveSettings();
+        getSettings();
+    }
+    else {
+        console.log("ERROR: Settings are supposed to be locked????")
+    }
+}
+
+// shows custom alert to user
+function showPopup(text, btnYesText, btnNoText) {
+    return new Promise((resolve) => {
+        const popup = document.getElementById("popup");
+        const popupText = document.getElementById("popupText");
+        const confirmYes = document.getElementById("confirmYes");
+        const confirmNo = document.getElementById("confirmNo");
+
+        popupText.textContent = text;
+        confirmYes.textContent = btnYesText;
+        confirmNo.textContent = btnNoText;
+        popup.style.display = "block";
+
+        // Remove any existing event listeners before adding new ones
+        confirmYes.replaceWith(confirmYes.cloneNode(true));
+        confirmNo.replaceWith(confirmNo.cloneNode(true));
+
+        const newConfirmYes = document.getElementById("confirmYes");
+        const newConfirmNo = document.getElementById("confirmNo");
+
+        newConfirmYes.addEventListener("click", () => {
+            popup.style.display = "none";
+            resolve(true);
+        });
+
+        newConfirmNo.addEventListener("click", () => {
+            popup.style.display = "none";
+            resolve(false);
+        });
+    });
+}
+
+
 
 // Update the time label based on the slider value
 function updateTimeLabel(value) {
@@ -112,15 +172,33 @@ function updateTimeLabel(value) {
 // Attach event listeners
 document.addEventListener('DOMContentLoaded', () => {
     getSettings();
-    
     const timeLimitSlider = document.getElementById('timeLimit');
     const saveButton = document.getElementById('saveSettingsButton');
+    const lockButton = document.getElementById('lockSettingsButton');
     
     timeLimitSlider.addEventListener('input', (event) => {
         updateTimeLabel(event.target.value);
     });
 
-    saveButton.addEventListener('click', saveSettings);
+    saveButton.addEventListener('click', async () => {
+        const popupAskA = await showPopup("Are you sure you want to save current settings?", "Save Settings", "Cancel")
+        if (popupAskA) {
+            saveSettings();
+            alert("Settings Saved!");
+        }
+    });
+    
+    lockButton.addEventListener('click', async () => {
+        const popupAskA = await showPopup("How long do you want to lock settings for?", "7 days (Default)", "Cancel")
+        if (popupAskA) {
+            const popupAskB = await showPopup("Are you sure you want to lock settings for 7 days (This cant be changed other than re-installing the extension completely)", "Yes I am sure.", "Cancel")
+            if(popupAskB)  {     
+                lockSettings();
+                alert("Current Settings have been locked for 7 Days!");
+            }
+        }
+    });
+    
     
     // Add click listeners to custom checkboxes
     document.querySelectorAll('.custom-checkbox').forEach((checkboxContainer) => {

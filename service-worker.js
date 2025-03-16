@@ -14,7 +14,9 @@ const defaultSettings = {
     lastReset: "0",
     websiteStatus: "restrict", 
     advanceForceRestrict: false,
-    nextResetTime: 10000000000
+    nextResetTime: 10000000000,
+    settingsLocked: false, 
+    settingsUnlockedTime: 1
 };
 
 // Global variables

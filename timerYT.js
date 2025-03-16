@@ -1,18 +1,12 @@
 console.log("YouTube Timer content script loaded.");
 
 /* TODO
-
- * track users full watch histroy - time grapth
- * lock mode for settings
- 
- * Donate button? - buy me a coffee
- 
- * add more quotes to notifications
-
-
- * reset hour setting?
+ * track users full watch histroy - time grapth v4
+ * Donate button? - buy me a coffee 
+ * add more quotes to notifications v4 
+ * have timer for watching videos not just being on youtube v4
+ * debugging setting to clear up logs 
 */ 
-
 
 // Global variables
 let settings = {};
@@ -22,15 +16,19 @@ let saveInterval = null; // Interval for saving settings
 // Function to check and reset the timer if needed
 function checkAndResetTimer() {
     const now = Date.now();
+
     if (!settings.lastReset || !settings.nextResetTime) return;
-    console.log(settings.nextResetTime)
-    console.log(now)
+
     if (now >= settings.nextResetTime) {
         console.log("Resetting time spent...");
         settings.timeSpent = 0;
         settings.timeLimitExceeded = false;
+        settings.timeLimitHalf = false;
+        settings.timeLimitCustom = false;
         settings.lastReset = now;
-
+        
+        
+        
         // Determine next reset time based on resetType
         if (settings.resetType === "daily") {
             settings.nextResetTime = new Date().setHours(24, 0, 0, 0); // Next midnight
@@ -96,10 +94,10 @@ function modifyYoutube() {
 // Function to retrieve settings from storage
 function getSettings() {
     return browser.storage.local.get([
-        'timeSpent', 'timeLimitExceeded', 'timeLimitHalf', 'timeLimitCustom', 'timeLimit', 'notifiyTimeUp', 'notifiyHalfTimeUp', 'notifyCustomTime', 'websiteStatus', 'resetType', 'lastReset', 'advanceForceRestrict', 'nextResetTime'
-    ]).then((result) => {
+        'timeSpent', 'timeLimitExceeded', 'timeLimitHalf', 'timeLimitCustom', 'timeLimit', 'notifiyTimeUp', 'notifiyHalfTimeUp', 'notifyCustomTime', 'websiteStatus', 'resetType', 'lastReset', 'advanceForceRestrict', 'nextResetTime', 'settingsLocked', 'settingsUnlockedTime'
+        ]).then((result) => {
         settings = {
-            timeSpent: result.timeSpent || 0, 
+            timeSpent: result.timeSpent || 0,
             timeLimitExceeded: result.timeLimitExceeded,
             timeLimitHalf: result.timeLimitHalf,
             timeLimitCustom: result.timeLimitCustom,
@@ -111,19 +109,23 @@ function getSettings() {
             resetType: result.resetType,
             lastReset: result.lastReset,
             advanceForceRestrict: result.advanceForceRestrict,
-            nextResetTime: result.nextResetTime
+            nextResetTime: result.nextResetTime,
+            settingsLocked: result.settingsLocked,
+            settingsUnlockedTime: result.settingsUnlockedTime
         };
         checkAndResetTimer();
     }).catch(console.error);
 }
-
 // Function to save settings
 function saveSettings() {
     return browser.storage.local
         .set({ 
             timeSpent: settings.timeSpent, 
             lastReset: settings.lastReset, 
-            nextResetTime: settings.nextResetTime 
+            nextResetTime: settings.nextResetTime,
+            timeLimitExceeded: settings.timeLimitExceeded,
+            timeLimitHalf: settings.timeLimitHalf,
+            timeLimitCustom: settings.timeLimitCustom
         })
         .then(() => {
             console.log("Settings saved:", settings);

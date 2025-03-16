@@ -7,106 +7,117 @@
 	<script src="./settings.js" defer></script>
 </head>
 <body>
-  <p>V.1.0.2 (beta)</p>
+  <p>V.1.0.3 (beta)</p>
   <h3>Settings</h3>
-
-  <!-- Time Limit Setting -->
-  <div class="setting">
-      <label for="timeLimit">Time Limit: 
-          <span class="tooltip">
-              <span class="tooltip-icon">[i]</span>
-              <span class="tooltip-text">Set how long you can use YouTube before restrictions apply.</span>
-          </span>
-      </label>
-      <div class="slider-container">
-          <input type="range" id="timeLimit" min="0" max="24" step="0.25" value="1">
-          <span id="timeLabel">1:00 Hour/s</span>
-      </div>
-  </div>
-
-  <!-- Action When Time Limit Is Up -->
-  <div class="setting">
-      <label for="timeLimitAction">What happens when you run out of time? 
-          <span class="tooltip">
-              <span class="tooltip-icon">[i]</span>
-              <span class="tooltip-text">Choose what happens when your set time expires. (Restrict: No homepage or side content, Block: Blocks YouTube completely)</span>
-          </span>
-      </label>
-      <select id="timeLimitAction">
-          <option value="block">Block YouTube Website</option>
-          <option value="restrict">Restrict YouTube Homepage</option>
-          <option value="allow">Do Nothing</option>
-      </select>
-  </div>
-
-  <!-- Action When To Reset Timer -->
-  <div class="setting">
-      <label for="timeResetAction">How often should the timer reset?
-          <span class="tooltip">
-              <span class="tooltip-icon">[i]</span>
-              <span class="tooltip-text">Choose when your time limit resets (daily, weekly, monthly, or never) IMPORTANT: Changes wont show until next timer reset.</span>
-          </span>
-      </label>
-      <select id="timeResetAction">
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-          <option value="none">Never</option>
-      </select>
-  </div>
-
-  <!-- Notification Settings -->
-  <div class="setting">
-      <label>Notification Settings:</label>
-     <div class="custom-checkbox">
-          <input type="checkbox" id="notifyWhenTimeUp">
-          <span></span>
-          <label for="notifyWhenTimeUp">Notify user when time is up
+  <p id="lockText"></p>
+  <section id="settings">
+    <!-- Confirmation Popup -->
+    <div id="popup" class="popup">
+        <p id="popupText">Are you sure you want to do this?</p>
+        <button class="SettingsButton" id="confirmYes">Yes</button>
+        <button class="SettingsButton" id="confirmNo">No</button>
+    </div>
+    
+    <!-- Time Limit Setting -->
+    <div class="setting">
+        <label for="timeLimit">Time Limit: 
             <span class="tooltip">
                 <span class="tooltip-icon">[i]</span>
-                <span class="tooltip-text">A reminder will be sent when your time expires.</span>
-            </span>
-          </label>
-      </div>
-      <div class="custom-checkbox">
-          <input type="checkbox" id="notifyAtHalfTime">
-          <span></span>
-          <label for="notifyAtHalfTime">Notify user when half the time limit is used
-              <span class="tooltip">
-                  <span class="tooltip-icon">[i]</span>
-                  <span class="tooltip-text">A reminder will be sent when 50% of your time is used.</span>
-              </span>
-          </label>
-      </div>
-      <div class="custom-checkbox">
-          <input type="checkbox" id="notifyCustomTime">
-          <span></span>
-          <label for="notifyCustomTime">Notify user 
-              <input max="99999" type="number" class="custom-input" id="customNotificationInput"> minute/s before time limit
-              <span class="tooltip">
-                  <span class="tooltip-icon">[i]</span>
-                  <span class="tooltip-text">A reminder will be sent at a user defined period before your time is up.</span>
-              </span>
-          </label>
-      </div>
-  </div>
 
-  <!-- Advanced Settings -->
-  <div class="setting">
-    <label>Advanced Settings:</label>
-    <div class="custom-checkbox">
-        <input type="checkbox" id="advanceForceRestrict">
-        <span></span>
-        <label for="advanceForceRestrict">Force Restrict Always
-            <span class="tooltip">
-                <span class="tooltip-icon">[i]</span>
-                <span class="tooltip-text">YouTube will always be restricted (No homepage/side content), Always.</span>
+                <span class="tooltip-text">Set how long you can use YouTube before restrictions apply.</span>
             </span>
         </label>
+        <div class="slider-container">
+            <input type="range" id="timeLimit" min="0" max="24" step="0.25" value="1">
+            <span id="timeLabel">1:00 Hour/s</span>
+        </div>
     </div>
-  </div>
 
-  <button id="saveSettingsButton">Save Settings</button>
+    <!-- Action When Time Limit Is Up -->
+    <div class="setting">
+        <label for="timeLimitAction">What happens when you run out of time? 
+            <span class="tooltip">
+                <span class="tooltip-icon">[i]</span>
+                <span class="tooltip-text">Choose what happens when your set time expires. (Restrict: No homepage or side content, Block: Blocks YouTube completely)</span>
+            </span>
+        </label>
+        <select id="timeLimitAction">
+            <option value="block">Block YouTube Website</option>
+            <option value="restrict">Restrict YouTube Homepage</option>
+            <option value="allow">Do Nothing</option>
+        </select>
+    </div>
+
+    <!-- Action When To Reset Timer -->
+    <div class="setting">
+        <label for="timeResetAction">How often should the timer reset?
+            <span class="tooltip">
+                <span class="tooltip-icon">[i]</span>
+                <span class="tooltip-text">Choose when your time limit resets (daily, weekly, monthly, or never) IMPORTANT: Changes wont show until next timer reset.</span>
+            </span>
+        </label>
+        <select id="timeResetAction">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="none">Never</option>
+        </select>
+    </div>
+
+    <!-- Notification Settings -->
+    <div class="setting">
+        <label>Notification Settings:</label>
+       <div class="custom-checkbox">
+            <input type="checkbox" id="notifyWhenTimeUp">
+            <span></span>
+            <label for="notifyWhenTimeUp">Notify user when time is up
+              <span class="tooltip">
+                  <span class="tooltip-icon">[i]</span>
+                  <span class="tooltip-text">A reminder will be sent when your time expires.</span>
+              </span>
+            </label>
+        </div>
+        <div class="custom-checkbox">
+            <input type="checkbox" id="notifyAtHalfTime">
+            <span></span>
+            <label for="notifyAtHalfTime">Notify user when half the time limit is used
+                <span class="tooltip">
+                    <span class="tooltip-icon">[i]</span>
+                    <span class="tooltip-text">A reminder will be sent when 50% of your time is used.</span>
+                </span>
+            </label>
+        </div>
+        <div class="custom-checkbox">
+            <input type="checkbox" id="notifyCustomTime">
+            <span></span>
+            <label for="notifyCustomTime">Notify user 
+                <input max="99999" type="number" class="custom-input" id="customNotificationInput"> minute/s before time limit
+                <span class="tooltip">
+                    <span class="tooltip-icon">[i]</span>
+                    <span class="tooltip-text">A reminder will be sent at a user defined period before your time is up.</span>
+                </span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Advanced Settings -->
+    <div class="setting">
+      <label>Advanced Settings:</label>
+      <div class="custom-checkbox">
+          <input type="checkbox" id="advanceForceRestrict">
+          <span></span>
+          <label for="advanceForceRestrict">Force Restrict Always
+              <span class="tooltip">
+                  <span class="tooltip-icon">[i]</span>
+                  <span class="tooltip-text">YouTube will always be restricted (No homepage/side content), Always.</span>
+              </span>
+          </label>
+      </div>
+    </div>
+
+    <button id="saveSettingsButton" class="SettingsButton">Save Settings</button>
+    <button id="lockSettingsButton" class="SettingsButton">Lock Settings</button>
+  </section>
 </body>
 </html>
 
